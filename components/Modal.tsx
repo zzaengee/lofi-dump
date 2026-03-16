@@ -2,38 +2,17 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useEffect } from "react"
 
-const FALLBACKS = [
-  { bg: "#cce8f0", emoji: "🌊" },
-  { bg: "#ffd6ec", emoji: "🌸" },
-  { bg: "#d4f7c5", emoji: "🌿" },
-  { bg: "#fffacc", emoji: "✦"  },
-  { bg: "#ffd6b0", emoji: "✨" },
-  { bg: "#e0d4ff", emoji: "🔮" },
-  { bg: "#c8f0d4", emoji: "🍃" },
-  { bg: "#f9dcc4", emoji: "☁️" },
-]
-
-export default function Modal({
-  post,
-  index,
-  onClose,
-}: {
-  post: any
-  index: number
-  onClose: () => void
-}) {
-  const fb = FALLBACKS[index % FALLBACKS.length]
-
+export default function Modal({ post, index, onClose }: { post: any; index: number; onClose: () => void }) {
   useEffect(() => {
     if (post) document.body.style.overflow = "hidden"
-    else       document.body.style.overflow = ""
+    else document.body.style.overflow = ""
     return () => { document.body.style.overflow = "" }
   }, [post])
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
-    window.addEventListener("keydown", handler)
-    return () => window.removeEventListener("keydown", handler)
+    const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
+    window.addEventListener("keydown", h)
+    return () => window.removeEventListener("keydown", h)
   }, [onClose])
 
   return (
@@ -44,141 +23,107 @@ export default function Modal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
+          transition={{ duration: 0.2 }}
           onClick={onClose}
           style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(245,242,235,0.97)",
-            zIndex: 500,
+            position: "fixed", inset: 0, zIndex: 500,
+            background: "rgba(240,237,230,0.96)",
+            backdropFilter: "blur(16px)",
             overflowY: "auto",
-            display: "flex",
-            justifyContent: "center",
+            display: "flex", justifyContent: "center",
             padding: "40px 20px 100px",
           }}
         >
           <motion.div
             key="modal-inner"
-            initial={{ y: 20, scale: 0.97 }}
-            animate={{ y: 0, scale: 1 }}
-            exit={{ y: 16, scale: 0.97 }}
-            transition={{ duration: 0.28, ease: [0.34, 1.56, 0.64, 1] }}
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "680px", width: "100%" }}
+            initial={{ y: 24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 16, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.34, 1.2, 0.64, 1] }}
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: "660px", width: "100%" }}
           >
-            {/* TOP BAR */}
+            {/* 상단 바 */}
             <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderBottom: "2px solid #111",
-              paddingBottom: "14px",
-              marginBottom: "44px",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              borderBottom: "1px solid rgba(0,0,0,0.1)",
+              paddingBottom: "16px", marginBottom: "44px",
             }}>
-              <button
-                onClick={onClose}
-                style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: "10px",
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "#111",
-                  padding: 0,
-                }}
-              >
-                ← back to index
-              </button>
+              <button onClick={onClose} style={{
+                fontFamily: "'Pretendard', sans-serif",
+                fontSize: "12px", fontWeight: 400,
+                letterSpacing: "1px", textTransform: "uppercase",
+                background: "none", border: "none", cursor: "pointer", color: "#111", padding: 0,
+              }}>← back</button>
               <span style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: "10px",
-                color: "#aaa",
-                letterSpacing: "1px",
+                fontFamily: "'Pretendard', sans-serif",
+                fontSize: "11px", color: "#aaa", letterSpacing: "0.5px",
               }}>
                 {post.date} · {post.readTime || "3 min"} read
               </span>
             </div>
 
-            {/* COVER */}
-            <div style={{
-              width: "100%",
-              height: "300px",
-              border: "2px solid #111",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: post.cover ? "#e8e4dc" : fb.bg,
-              marginBottom: "36px",
-              overflow: "hidden",
-            }}>
-              {post.cover
-                ? <img src={post.cover} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : <span style={{ fontSize: "96px" }}>{fb.emoji}</span>
-              }
-            </div>
+            {/* 커버 */}
+            {post.cover && (
+              <div style={{
+                width: "100%", height: "320px", overflow: "hidden",
+                marginBottom: "36px",
+              }}>
+                <img src={post.cover} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            )}
 
-            {/* TAG */}
+            {/* 태그 */}
             <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: "10px",
-              letterSpacing: "2px",
-              textTransform: "uppercase",
-              border: "1.5px solid #111",
-              display: "inline-block",
-              padding: "3px 10px",
-              marginBottom: "16px",
+              fontFamily: "'Pretendard', sans-serif",
+              fontSize: "11px", fontWeight: 500,
+              letterSpacing: "2px", textTransform: "uppercase",
+              color: "#aaa", marginBottom: "12px",
             }}>
               {post.tag || "essay"}
             </div>
 
-            {/* TITLE */}
+            {/* 제목 */}
             <h1 style={{
-              fontFamily: "'Black Han Sans', sans-serif",
-              fontSize: "clamp(28px, 5vw, 48px)",
-              lineHeight: 1.1,
+              fontFamily: "'Pretendard', sans-serif",
+              fontSize: "clamp(26px, 5vw, 44px)",
+              fontWeight: 700,
+              lineHeight: 1.15,
+              letterSpacing: "-1px",
               color: "#111",
               marginBottom: "8px",
             }}>
               {post.title}
             </h1>
 
-            {/* META */}
+            {/* 메타 */}
             <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: "10px",
-              color: "#aaa",
-              letterSpacing: "1.5px",
-              marginBottom: "40px",
-              paddingBottom: "28px",
-              borderBottom: "1px dashed #ddd",
+              fontFamily: "'Pretendard', sans-serif",
+              fontSize: "12px", color: "#bbb",
+              marginBottom: "44px", paddingBottom: "32px",
+              borderBottom: "1px solid rgba(0,0,0,0.08)",
             }}>
-              [{String(index + 1).padStart(2, "0")}] — {post.tag || "essay"} — {post.date}
+              [{String(index + 1).padStart(2, "0")}] — {post.date}
             </div>
 
-            {/* BODY */}
+            {/* 본문 */}
             <div
-              className="modal-body"
+              style={{
+                fontFamily: "'Pretendard', sans-serif",
+                fontSize: "17px", lineHeight: 2.0,
+                color: "#222", fontWeight: 400,
+              }}
               dangerouslySetInnerHTML={{ __html: post.body || `<p>${post.excerpt || ""}</p>` }}
             />
 
-            {/* NOTION LINK */}
             {post.notionUrl && (
               <div style={{
-                marginTop: "52px",
-                borderTop: "1px solid #ddd",
+                marginTop: "52px", borderTop: "1px solid rgba(0,0,0,0.08)",
                 paddingTop: "18px",
-                fontFamily: "'Space Mono', monospace",
-                fontSize: "10px",
-                color: "#bbb",
-                letterSpacing: "1px",
-                textTransform: "uppercase",
+                fontFamily: "'Pretendard', sans-serif",
+                fontSize: "11px", color: "#ccc",
               }}>
-                ↗{" "}
-                <a href={post.notionUrl} target="_blank" rel="noreferrer" style={{ color: "#bbb" }}>
-                  Read full post on Notion
-                </a>
+                ↗ <a href={post.notionUrl} target="_blank" rel="noreferrer" style={{ color: "#bbb" }}>Read on Notion</a>
               </div>
             )}
           </motion.div>
